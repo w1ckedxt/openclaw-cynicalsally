@@ -27,6 +27,7 @@ Activate this skill when the user:
 - Shares a URL and wants honest feedback
 - Shares code and wants it reviewed
 - Shares an image and wants it roasted
+- Shares a document, PDF, CV, resume, essay, or any text file
 - Asks about their Sally quota or account status
 
 ## Commands
@@ -48,6 +49,14 @@ bash scripts/roast.sh --image "<base64>" "<media_type>" "<lang>"
 - `media_type`: One of "image/jpeg", "image/png", "image/gif", "image/webp" (required)
 - `lang`: Language code (optional, defaults to "en")
 
+### Roast a document
+When the user shares a document, text file, CV, resume, essay, or any text content:
+```bash
+bash scripts/roast.sh --document "<text>" "<lang>"
+```
+- `text`: The plain text content of the document (required)
+- `lang`: Language code (optional, defaults to "en")
+
 ### Review code
 When the user shares code files:
 ```bash
@@ -57,7 +66,7 @@ bash scripts/review.sh "<mode>" "<lang>" "<file1_path>" "<file1_content>" ["<fil
 - `lang`: Language code (optional, defaults to "en")
 - Files are passed as alternating path/content pairs
 
-### Full Truth analysis
+### Full Truth analysis (URL)
 When the user wants a deep, comprehensive analysis of a URL:
 ```bash
 bash scripts/truth.sh "<url>" "<lang>"
@@ -65,6 +74,22 @@ bash scripts/truth.sh "<url>" "<lang>"
 - `url`: The website URL for deep analysis (required)
 - `lang`: Language code (optional, defaults to "en")
 - This is async: the script polls until the result is ready (10-30 seconds)
+
+### Full Truth analysis (document)
+When the user wants a deep analysis of a document or text:
+```bash
+bash scripts/truth.sh --document "<text>" "<lang>"
+```
+- `text`: The plain text content (required)
+- `lang`: Language code (optional, defaults to "en")
+
+### Full Truth analysis (PDF)
+When the user shares a PDF file:
+```bash
+bash scripts/truth.sh --pdf "<base64>" "<lang>"
+```
+- `base64`: Base64-encoded PDF data (required)
+- `lang`: Language code (optional, defaults to "en")
 
 ### Check quota
 When the user asks about their remaining roasts or account status:

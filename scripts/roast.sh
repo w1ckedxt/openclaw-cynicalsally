@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Quick Roast — roast a URL or image via Sally API.
+# Quick Roast — roast a URL, image, or document via Sally API.
 # Usage:
 #   bash scripts/roast.sh <url> [lang]
 #   bash scripts/roast.sh --image <base64> <media_type> [lang]
+#   bash scripts/roast.sh --document <text> [lang]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
@@ -32,6 +33,24 @@ if [[ "${1:-}" == "--image" ]]; then
       lang: $lang,
       source: $source
     }')
+
+elif [[ "${1:-}" == "--document" ]]; then
+  # Document mode (plain text content)
+  DOC_TEXT="${2:?Missing document text}"
+  LANG=$(default_lang "${3:-}")
+
+  BODY=$(jq -n \
+    --arg documentText "$DOC_TEXT" \
+    --arg deviceId "$DEVICE_ID" \
+    --arg lang "$LANG" \
+    --arg source "$SALLY_SOURCE" \
+    '{
+      documentText: $documentText,
+      deviceId: $deviceId,
+      lang: $lang,
+      source: $source
+    }')
+
 else
   # URL mode
   URL="${1:?Missing URL to roast}"
