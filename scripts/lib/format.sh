@@ -11,8 +11,8 @@ format_roast() {
   score=$(echo "$json" | jq -r '.scorecard // "?"')
   bright_side=$(echo "$json" | jq -r '.bright_side // empty')
   suggest_ftt=$(echo "$json" | jq -r '.suggest_ftt // false')
-  quota_remaining=$(echo "$json" | jq -r '.quota.remaining // "?"')
-  quota_limit=$(echo "$json" | jq -r '.quota.limit // "?"')
+  quota_remaining=$(echo "$json" | jq -r 'if .quota then (.quota.remaining | tostring) else null end')
+  quota_limit=$(echo "$json" | jq -r 'if .quota then (.quota.limit | tostring) else null end')
 
   # Score header
   echo "SALLY'S VERDICT: ${score}/100"
@@ -32,7 +32,7 @@ format_roast() {
 
   # Burn options
   local burn_count
-  burn_count=$(echo "$json" | jq '.burn_options | length')
+  burn_count=$(echo "$json" | jq '.burn_options // [] | length')
   if [[ "$burn_count" -gt 0 ]]; then
     echo "Shareable burns:"
     echo "$json" | jq -r '.burn_options[]? | "- [\(.tone)] \(.text)"'
@@ -40,7 +40,9 @@ format_roast() {
   fi
 
   # Quota
-  echo "Roasts remaining: ${quota_remaining}/${quota_limit}"
+  if [[ -n "$quota_remaining" && "$quota_remaining" != "null" ]]; then
+    echo "Roasts remaining: ${quota_remaining}/${quota_limit}"
+  fi
 
   # Suggest full truth
   if [[ "$suggest_ftt" == "true" ]]; then
