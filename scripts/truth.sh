@@ -72,8 +72,30 @@ else
     }')
 fi
 
+# --- Enqueue job (handle 429 quota exhausted gracefully) ---
 RAW=$(sally_post "/truth" "$BODY")
-ENQUEUE_RESPONSE=$(parse_response "$RAW")
+
+HTTP_CODE=$(echo "$RAW" | tail -1)
+ENQUEUE_RESPONSE=$(echo "$RAW" | sed '$d')
+
+# Quota exhausted at enqueue time
+if [[ "$HTTP_CODE" == "429" ]]; then
+  echo "$ENQUEUE_RESPONSE"
+  echo "You've used all your free Full Truth analyses." >&2
+  echo "" >&2
+  echo "Already have SuperClub? Link your account:" >&2
+  echo "  sally login your@email.com" >&2
+  echo "" >&2
+  echo "Don't have SuperClub? Get unlimited analyses:" >&2
+  echo "  https://cynicalsally.com/superclub" >&2
+  exit 0
+fi
+
+# Other enqueue errors
+if [[ "$HTTP_CODE" -ge 400 ]]; then
+  echo "{\"error\": \"HTTP $HTTP_CODE\", \"details\": $ENQUEUE_RESPONSE}" >&2
+  exit 1
+fi
 
 JOB_ID=$(echo "$ENQUEUE_RESPONSE" | jq -r '.jobId // empty')
 if [[ -z "$JOB_ID" ]]; then

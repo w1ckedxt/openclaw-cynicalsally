@@ -49,10 +49,31 @@ BODY=$(jq -n \
     source: $source
   }')
 
-# --- Call API ---
+# --- Call API (handle 429 quota exhausted gracefully) ---
 RAW=$(sally_post "/review" "$BODY")
-RESPONSE=$(parse_response "$RAW")
 
-# --- Output ---
+HTTP_CODE=$(echo "$RAW" | tail -1)
+RESPONSE=$(echo "$RAW" | sed '$d')
+
+# Quota exhausted: show upgrade/login hints
+if [[ "$HTTP_CODE" == "429" ]]; then
+  echo "$RESPONSE"
+  echo "You've used all your free reviews this month." >&2
+  echo "" >&2
+  echo "Already have SuperClub? Link your account:" >&2
+  echo "  sally login your@email.com" >&2
+  echo "" >&2
+  echo "Don't have SuperClub? Get unlimited reviews:" >&2
+  echo "  https://cynicalsally.com/superclub" >&2
+  exit 0
+fi
+
+# Other errors: fail normally
+if [[ "$HTTP_CODE" -ge 400 ]]; then
+  echo "{\"error\": \"HTTP $HTTP_CODE\", \"details\": $RESPONSE}" >&2
+  exit 1
+fi
+
+# --- Success output ---
 echo "$RESPONSE"
 format_review "$RESPONSE" >&2

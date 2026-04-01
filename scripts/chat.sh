@@ -38,10 +38,25 @@ BODY=$(jq -n \
     history: $history
   }')
 
-# --- Call API ---
+# --- Call API (handle 429 quota exhausted gracefully) ---
 RAW=$(sally_post "/chat" "$BODY")
-RESPONSE=$(parse_response "$RAW")
 
-# --- Output ---
+HTTP_CODE=$(echo "$RAW" | tail -1)
+RESPONSE=$(echo "$RAW" | sed '$d')
+
+# Quota exhausted: still parse and format (don't exit 1)
+if [[ "$HTTP_CODE" == "429" ]]; then
+  echo "$RESPONSE"
+  format_chat "$RESPONSE" >&2
+  exit 0
+fi
+
+# Other errors: fail normally
+if [[ "$HTTP_CODE" -ge 400 ]]; then
+  echo "{\"error\": \"HTTP $HTTP_CODE\", \"details\": $RESPONSE}" >&2
+  exit 1
+fi
+
+# --- Success output ---
 echo "$RESPONSE"
 format_chat "$RESPONSE" >&2

@@ -69,11 +69,32 @@ else
     }')
 fi
 
-# --- Call API ---
+# --- Call API (handle 429 quota exhausted gracefully) ---
 RAW=$(sally_post "/roast" "$BODY")
-RESPONSE=$(parse_response "$RAW")
 
-# --- Output ---
+HTTP_CODE=$(echo "$RAW" | tail -1)
+RESPONSE=$(echo "$RAW" | sed '$d')
+
+# Quota exhausted: show upgrade/login hints instead of crashing
+if [[ "$HTTP_CODE" == "429" ]]; then
+  echo "$RESPONSE"
+  echo "You've used all your free roasts today." >&2
+  echo "" >&2
+  echo "Already have SuperClub? Link your account:" >&2
+  echo "  sally login your@email.com" >&2
+  echo "" >&2
+  echo "Don't have SuperClub? Get unlimited roasts:" >&2
+  echo "  https://cynicalsally.com/superclub" >&2
+  exit 0
+fi
+
+# Other errors: fail normally
+if [[ "$HTTP_CODE" -ge 400 ]]; then
+  echo "{\"error\": \"HTTP $HTTP_CODE\", \"details\": $RESPONSE}" >&2
+  exit 1
+fi
+
+# --- Success output ---
 # Raw JSON for agent parsing
 echo "$RESPONSE"
 

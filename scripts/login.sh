@@ -30,14 +30,29 @@ BODY=$(jq -n \
 RAW=$(sally_post "/auth/magic-link" "$BODY")
 RESPONSE=$(parse_response "$RAW")
 
-# --- Output ---
+# --- Output JSON for machine consumption ---
 echo "$RESPONSE"
 
-# User-friendly message
+# --- User-friendly output ---
 SENT=$(echo "$RESPONSE" | jq -r '.sent // false')
 if [[ "$SENT" == "true" ]]; then
   echo "" >&2
-  echo "Check your email for the login link." >&2
-  echo "Once you click it, this device will be linked to your SuperClub account." >&2
-  echo "Sally will remember everything from then on." >&2
+  echo "Magic link sent to ${EMAIL}." >&2
+  echo "" >&2
+  echo "Next steps:" >&2
+  echo "  1. Check your email (and spam folder) for the login link" >&2
+  echo "  2. Click the link — it opens in your browser, that's normal" >&2
+  echo "  3. Come back here and say: sally status" >&2
+  echo "     This confirms your device is linked to SuperClub" >&2
+  echo "" >&2
+  echo "After linking: unlimited chat, full memory, Sally remembers everything." >&2
+else
+  ERROR=$(echo "$RESPONSE" | jq -r '.error // .message // "Unknown error"')
+  echo "" >&2
+  echo "Could not send magic link: ${ERROR}" >&2
+  echo "" >&2
+  echo "Troubleshooting:" >&2
+  echo "  - Double-check your email address" >&2
+  echo "  - Make sure it's the email you used for SuperClub" >&2
+  echo "  - Don't have SuperClub? Get it at https://cynicalsally.com/superclub" >&2
 fi

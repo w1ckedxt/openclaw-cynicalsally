@@ -41,7 +41,16 @@ format_roast() {
 
   # Quota
   if [[ -n "$quota_remaining" && "$quota_remaining" != "null" ]]; then
-    echo "Roasts remaining: ${quota_remaining}/${quota_limit}"
+    if [[ "$quota_remaining" == "0" ]]; then
+      echo "That was your last free roast today."
+      echo "Already have SuperClub? Say: sally login your@email.com"
+      echo "Or upgrade: https://cynicalsally.com/superclub"
+    elif [[ "$quota_remaining" -le 1 ]]; then
+      echo "Roasts remaining: ${quota_remaining}/${quota_limit}"
+      echo "Tip: SuperClub members get unlimited roasts. Say: sally login your@email.com"
+    else
+      echo "Roasts remaining: ${quota_remaining}/${quota_limit}"
+    fi
   fi
 
   # Suggest full truth
@@ -164,33 +173,67 @@ format_truth() {
 format_status() {
   local json="$1"
 
-  local is_sc tier qr_remaining cli_qr_remaining cli_qr_limit
+  local is_sc tier email qr_remaining
 
   is_sc=$(echo "$json" | jq -r '.isSuperClub // false')
-  tier=$(echo "$json" | jq -r 'if .isSuperClub then "SuperClub" elif .cliTier then .cliTier else "free" end')
+  tier=$(echo "$json" | jq -r 'if .isSuperClub then "SuperClub" else "free" end')
+  email=$(echo "$json" | jq -r '.email // empty')
   qr_remaining=$(echo "$json" | jq -r '.quotaRemaining // 0')
-  cli_qr_remaining=$(echo "$json" | jq -r '.cliQuota.qr.remaining // 0')
-  cli_qr_limit=$(echo "$json" | jq -r '.cliQuota.qr.limit // 0')
 
   echo "Sally Account Status"
-  echo "Tier: ${tier}"
-  echo "Quick Roasts: ${qr_remaining}/3 remaining today"
-  echo "CLI Reviews: ${cli_qr_remaining}/${cli_qr_limit} remaining this month"
+  echo "===================="
 
-  if [[ "$is_sc" != "true" ]]; then
-    echo ""
-    echo "Upgrade to SuperClub for unlimited roasts: https://cynicalsally.com/superclub"
+  if [[ "$is_sc" == "true" ]]; then
+    echo "Tier: SuperClub"
+    if [[ -n "$email" ]]; then
+      echo "Linked to: ${email}"
+    fi
+    echo "Quick Roasts: unlimited"
+    echo "Chat: unlimited"
+    echo "Memory: full (Sally remembers everything)"
+  else
+    echo "Tier: Free"
+    echo "Quick Roasts: ${qr_remaining}/3 remaining today"
+    echo "Chat: 10 messages/day"
+    echo "Memory: basics only (name, age, location)"
+
+    if [[ -n "$email" ]]; then
+      echo ""
+      echo "Device linked to: ${email}"
+      echo "But no active SuperClub subscription found."
+      echo "Subscribe: https://cynicalsally.com/superclub"
+    else
+      echo ""
+      echo "Already have SuperClub? Link your account:"
+      echo "  sally login your@email.com"
+      echo ""
+      echo "Don't have SuperClub? Get unlimited everything:"
+      echo "  https://cynicalsally.com/superclub"
+    fi
   fi
 }
 
 format_chat() {
   local json="$1"
 
-  local reply quota_remaining quota_limit
+  local reply quota_remaining quota_limit error_code
 
   reply=$(echo "$json" | jq -r '.reply // empty')
+  error_code=$(echo "$json" | jq -r '.code // empty')
   quota_remaining=$(echo "$json" | jq -r 'if .quota then (.quota.remaining | tostring) else null end')
   quota_limit=$(echo "$json" | jq -r 'if .quota then (.quota.limit | tostring) else null end')
+
+  # Quota exhausted (429 response parsed by chat.sh)
+  if [[ "$error_code" == "chat_quota_exhausted" ]]; then
+    echo "You've hit your daily chat limit (${quota_limit} messages)."
+    echo ""
+    echo "Already have SuperClub? Link your account:"
+    echo "  sally login your@email.com"
+    echo ""
+    echo "Don't have SuperClub yet? Get unlimited chat:"
+    echo "  https://cynicalsally.com/superclub"
+    return
+  fi
 
   if [[ -n "$reply" ]]; then
     echo "$reply"
@@ -198,6 +241,15 @@ format_chat() {
 
   if [[ -n "$quota_remaining" && "$quota_remaining" != "null" ]]; then
     echo ""
-    echo "Chat: ${quota_remaining}/${quota_limit} remaining today"
+    if [[ "$quota_remaining" == "0" ]]; then
+      echo "That was your last free message today."
+      echo "Already have SuperClub? Say: sally login your@email.com"
+      echo "Or upgrade: https://cynicalsally.com/superclub"
+    elif [[ "$quota_remaining" -le 3 ]]; then
+      echo "Chat: ${quota_remaining}/${quota_limit} remaining today"
+      echo "Tip: SuperClub members get unlimited chat. Say: sally login your@email.com"
+    else
+      echo "Chat: ${quota_remaining}/${quota_limit} remaining today"
+    fi
   fi
 }

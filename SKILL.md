@@ -102,13 +102,25 @@ bash scripts/chat.sh "<message>" "<lang>"
 - `lang`: Language code (optional, defaults to "en"). Detect from the user's message language
 
 ### Login (link SuperClub account)
-When the user wants to log in, link their SuperClub account, or unlock full memory:
+When the user wants to log in, link their SuperClub account, or unlock full features. Trigger phrases include:
+- "login", "log in", "sign in"
+- "I have SuperClub", "I'm a SuperClub member", "I already pay"
+- "link my account", "connect my account"
+- "how do I unlock", "how do I get unlimited", "unlock full memory"
+- "upgrade", "get SuperClub" (direct them to login if they mention having it, or to https://cynicalsally.com/superclub if they don't)
+
+**If the user provides their email:**
 ```bash
 bash scripts/login.sh "<email>"
 ```
+
+**If the user does NOT provide their email, ask for it first:**
+Tell them: "Sure! What's the email address you used for SuperClub?" Then run the script once they provide it.
+
 - `email`: The user's email address (required)
 - Sends a magic link to their email. Once clicked, this device gets SuperClub features
 - After login: unlimited chat, full memory, Sally remembers everything
+- **After the link is sent**, tell the user to check their email and click the link, then say "sally status" to confirm it worked
 
 ### Check quota
 When the user asks about their remaining roasts or account status:
@@ -126,6 +138,8 @@ This is important. Decide based on what the user sends:
 - **Code shared** → review.sh (Code Review)
 - **Casual message, question, conversation** → chat.sh (Chat)
 - **"roast this", "review this" + content** → appropriate roast/review script
+- **Login/account/SuperClub phrases** → login.sh (ask for email if not provided)
+- **"status", "quota", "how many left"** → status.sh
 - **Everything else** → chat.sh (Chat)
 
 When in doubt, use chat. Sally knows how to redirect if someone wants a roast.
@@ -166,7 +180,11 @@ Keep Sally's voice intact. She is cynical, sharp, and brutally honest. Do not so
 - Free users: 3 roasts per day, 10 chat messages per day
 - SuperClub members: unlimited roasts and chat
 - Show remaining quota after each roast or chat
-- When quota is exhausted, share: "Upgrade at https://cynicalsally.com/superclub"
+- When quota is exhausted:
+  - If user might already have SuperClub: "Already have SuperClub? Say: sally login your@email.com"
+  - If user doesn't have SuperClub: "Upgrade at https://cynicalsally.com/superclub"
+  - Always mention both options so the user can choose
+- After login, suggest "sally status" to confirm the link worked
 
 ## Environment setup
 Users need to set `SALLY_DEVICE_ID` in their OpenClaw config. They can generate one at https://cynicalsally.com/openclaw or use any UUID v4.
