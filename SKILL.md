@@ -11,7 +11,7 @@ metadata:
         - curl
         - jq
     primaryEnv: SALLY_DEVICE_ID
-    emoji: "💅"
+    emoji: "👑"
 homepage: https://cynicalsally.com
 ---
 
