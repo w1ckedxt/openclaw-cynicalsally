@@ -3,41 +3,49 @@
 </p>
 
 <h1 align="center">👑 Cynical Sally</h1>
-<p align="center"><strong>Meet Sally. She's sharp, she's honest, and she has opinions about everything.</strong></p>
-<p align="center">Talk to her. Show her things. She'll tell you what she really thinks.</p>
+<p align="center"><strong>Meet Sally. She's the honest friend you didn't ask for.</strong></p>
 
 ---
 
-## What Can Sally Do?
+Sally is a personality. You talk to her, she talks back. She remembers your name, your stories, your questionable life choices. She's sharp, she's funny, and she never sugarcoats.
 
-- **Chat** - She remembers you. She talks back. She's the friend who tells you the truth when nobody else will.
-- **Roast** - URLs, images, documents, PDFs. Hand her anything and she'll tear it apart.
-- **Code Review** - Quick or deep. She reads your code and doesn't hold back.
-- **Full Truth** - The full breakdown, delivered as a magazine-style PDF report.
+Show her a URL, an image, a document, a PDF. She'll tell you exactly what she thinks. Or just chat. She's got opinions about everything.
 
-## Get Started
+## How It Works
 
-Set your device ID in OpenClaw config:
+Just talk to her. Say "hey sally" and go from there.
 
-```
-SALLY_DEVICE_ID=<any-uuid-v4>
-```
+- Send her a message and she'll chat
+- Share a link and she'll roast it
+- Drop an image or PDF and she'll have thoughts
 
-Then just talk to her. She'll take it from there.
+She remembers you between conversations. The more you talk, the more personal she gets.
 
 ## SuperClub
 
-Free gets you 3 roasts and 10 chats a day. [SuperClub](https://cynicalsally.com/superclub) unlocks unlimited everything, and Sally remembers you fully.
+Free gives you a taste. [SuperClub](https://cynicalsally.com/superclub) gives you all of Sally: unlimited conversations, full memory, she remembers everything about you.
+
+Already a member? Just say:
 
 ```
 sally login your@email.com
 ```
 
-## Find Sally
+## Setup
+
+Add your device ID to your OpenClaw config:
+
+```
+SALLY_DEVICE_ID=<any-uuid-v4>
+```
+
+That's it.
+
+## More Sally
 
 - [cynicalsally.com](https://cynicalsally.com)
-- [Chrome Extension](https://chromewebstore.google.com) - Sally in your browser
-- [CLI](https://www.npmjs.com/package/@cynicalsally/cli) - `npm install -g @cynicalsally/cli`
+- [Chrome Extension](https://chromewebstore.google.com)
+- [CLI for developers](https://www.npmjs.com/package/@cynicalsally/cli)
 
 ---
 
