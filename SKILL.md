@@ -59,6 +59,14 @@ bash scripts/roast.sh --document "<text>" "<lang>"
 - `text`: The plain text content of the document (required)
 - `lang`: Language code (optional, defaults to "en")
 
+### Roast a PDF
+When the user shares a PDF file:
+```bash
+bash scripts/roast.sh --pdf "<base64>" "<lang>"
+```
+- `base64`: Base64-encoded PDF data (required)
+- `lang`: Language code (optional, defaults to "en")
+
 ### Review code
 When the user shares code files:
 ```bash
@@ -134,7 +142,8 @@ This is important. Decide based on what the user sends:
 
 - **URL shared** → roast.sh (Quick Roast)
 - **Image shared** → roast.sh --image (Quick Roast)
-- **Document/PDF shared** → truth.sh --document or --pdf (Full Truth)
+- **Document shared** → roast.sh --document (Quick Roast)
+- **PDF shared** → roast.sh --pdf (Quick Roast)
 - **Code shared** → review.sh (Code Review)
 - **Casual message, question, conversation** → chat.sh (Chat)
 - **"roast this", "review this" + content** → appropriate roast/review script

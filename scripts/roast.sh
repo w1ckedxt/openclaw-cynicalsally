@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Quick Roast — roast a URL, image, or document via Sally API.
+# Quick Roast — roast a URL, image, document, or PDF via Sally API.
 # Usage:
 #   bash scripts/roast.sh <url> [lang]
 #   bash scripts/roast.sh --image <base64> <media_type> [lang]
 #   bash scripts/roast.sh --document <text> [lang]
+#   bash scripts/roast.sh --pdf <base64> [lang]
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/lib/common.sh"
@@ -46,6 +47,25 @@ elif [[ "${1:-}" == "--document" ]]; then
     --arg source "$SALLY_SOURCE" \
     '{
       documentText: $documentText,
+      deviceId: $deviceId,
+      lang: $lang,
+      source: $source
+    }')
+
+elif [[ "${1:-}" == "--pdf" ]]; then
+  # PDF mode (base64 encoded PDF, server extracts text)
+  PDF_BASE64="${2:?Missing PDF base64 data}"
+  LANG=$(default_lang "${3:-}")
+
+  BODY=$(jq -n \
+    --arg documentBase64 "$PDF_BASE64" \
+    --arg documentMediaType "application/pdf" \
+    --arg deviceId "$DEVICE_ID" \
+    --arg lang "$LANG" \
+    --arg source "$SALLY_SOURCE" \
+    '{
+      documentBase64: $documentBase64,
+      documentMediaType: $documentMediaType,
       deviceId: $deviceId,
       lang: $lang,
       source: $source
