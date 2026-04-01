@@ -162,17 +162,20 @@ format_truth() {
 format_status() {
   local json="$1"
 
-  local tier qr_remaining qr_limit
+  local is_sc tier qr_remaining cli_qr_remaining cli_qr_limit
 
-  tier=$(echo "$json" | jq -r '.tier // "free"')
-  qr_remaining=$(echo "$json" | jq -r '.quota.qr.remaining // "?"')
-  qr_limit=$(echo "$json" | jq -r '.quota.qr.limit // "?"')
+  is_sc=$(echo "$json" | jq -r '.isSuperClub // false')
+  tier=$(echo "$json" | jq -r 'if .isSuperClub then "SuperClub" elif .cliTier then .cliTier else "free" end')
+  qr_remaining=$(echo "$json" | jq -r '.quotaRemaining // 0')
+  cli_qr_remaining=$(echo "$json" | jq -r '.cliQuota.qr.remaining // 0')
+  cli_qr_limit=$(echo "$json" | jq -r '.cliQuota.qr.limit // 0')
 
   echo "Sally Account Status"
   echo "Tier: ${tier}"
-  echo "Quick Roasts: ${qr_remaining}/${qr_limit} remaining today"
+  echo "Quick Roasts: ${qr_remaining}/3 remaining today"
+  echo "CLI Reviews: ${cli_qr_remaining}/${cli_qr_limit} remaining this month"
 
-  if [[ "$tier" == "free" ]]; then
+  if [[ "$is_sc" != "true" ]]; then
     echo ""
     echo "Upgrade to SuperClub for unlimited roasts: https://cynicalsally.com/superclub"
   fi
