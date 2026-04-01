@@ -5,12 +5,13 @@ version: 1.0.0
 metadata:
   openclaw:
     requires:
-      env:
-        - SALLY_DEVICE_ID
       bins:
         - curl
         - jq
-    primaryEnv: SALLY_DEVICE_ID
+        - uuidgen
+    persistence:
+      - path: ~/.sally-device-id
+        purpose: Stores a unique device ID to maintain identity between conversations
     emoji: "👑"
 homepage: https://cynicalsally.com
 ---
@@ -196,4 +197,12 @@ Keep Sally's voice intact. She is cynical, sharp, and brutally honest. Do not so
 - After login, suggest "sally status" to confirm the link worked
 
 ## Environment setup
-Sally auto-generates a device ID on first use (saved to `~/.sally-device-id`). Users can optionally set `SALLY_DEVICE_ID` in their OpenClaw config to use a specific ID.
+Sally auto-generates a device ID on first use (saved to `~/.sally-device-id`). Users can optionally set `SALLY_DEVICE_ID` to use a specific ID.
+
+## Privacy
+- Sally stores a device ID locally at `~/.sally-device-id` to maintain your identity between conversations
+- All messages are sent to `cynicalsally.com/api/v1` for processing
+- Free users: Sally remembers your name, age, and location
+- SuperClub users: Sally remembers more (interests, life events, etc.)
+- No data is shared with third parties
+- Users can request data deletion at any time via Bye@CynicalSally.com

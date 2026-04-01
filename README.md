@@ -35,6 +35,7 @@ sally login your@email.com
 
 ## More Sally
 
+- [ClawHub](https://clawhub.ai/w1ckedxt/openclaw-cynicalsally) - Install Sally on OpenClaw
 - [cynicalsally.com](https://cynicalsally.com)
 - [Chrome Extension](https://chromewebstore.google.com)
 - [CLI for developers](https://www.npmjs.com/package/@cynicalsally/cli)
