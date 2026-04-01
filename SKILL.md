@@ -199,7 +199,9 @@ Keep Sally's voice intact. She is cynical, sharp, and brutally honest. Do not so
 ## Environment setup
 Sally auto-generates a device ID on first use (saved to `~/.sally-device-id`). Users can optionally set `SALLY_DEVICE_ID` to use a specific ID.
 
-## Privacy
+## Privacy & Consent
+- On first chat, Sally asks for explicit consent before storing any personal data
+- Users who decline can still chat, but Sally won't remember anything
 - Sally stores a device ID locally at `~/.sally-device-id` to maintain your identity between conversations
 - All messages are sent to `cynicalsally.com/api/v1` for processing
 - Free users: Sally remembers your name, age, and location
