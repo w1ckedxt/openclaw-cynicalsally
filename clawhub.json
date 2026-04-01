@@ -1,21 +1,21 @@
 {
   "name": "cynicalsally",
   "displayName": "Cynical Sally",
-  "description": "Brutally honest roasts of websites, code, images, documents, and anything else you throw at her.",
+  "description": "Cynical Sally is a brutally honest AI personality. Chat with her, get roasted, or ask for the truth about anything you throw at her.",
   "version": "1.0.0",
   "author": "w1ckedxt",
   "homepage": "https://cynicalsally.com",
   "repository": "https://github.com/w1ckedxt/openclaw-cynicalsally",
   "license": "Apache-2.0",
   "tags": [
-    "code-review",
-    "website-review",
+    "chat",
     "roast",
-    "ai-review",
+    "code-review",
+    "ai-personality",
     "cynical-sally",
-    "developer-tools",
-    "feedback"
+    "feedback",
+    "document-review"
   ],
-  "emoji": "🔥",
+  "emoji": "💅",
   "skillPath": "./SKILL.md"
 }
