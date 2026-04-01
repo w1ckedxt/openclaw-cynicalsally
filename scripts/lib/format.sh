@@ -182,3 +182,22 @@ format_status() {
     echo "Upgrade to SuperClub for unlimited roasts: https://cynicalsally.com/superclub"
   fi
 }
+
+format_chat() {
+  local json="$1"
+
+  local reply quota_remaining quota_limit
+
+  reply=$(echo "$json" | jq -r '.reply // empty')
+  quota_remaining=$(echo "$json" | jq -r 'if .quota then (.quota.remaining | tostring) else null end')
+  quota_limit=$(echo "$json" | jq -r 'if .quota then (.quota.limit | tostring) else null end')
+
+  if [[ -n "$reply" ]]; then
+    echo "$reply"
+  fi
+
+  if [[ -n "$quota_remaining" && "$quota_remaining" != "null" ]]; then
+    echo ""
+    echo "Chat: ${quota_remaining}/${quota_limit} remaining today"
+  fi
+}
