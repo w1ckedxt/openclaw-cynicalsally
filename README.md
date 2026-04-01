@@ -25,17 +25,13 @@ Just talk to her. Say "hey sally" and go from there.
 
 ## SuperClub
 
-Free gives you a taste. [SuperClub](https://cynicalsally.com/superclub) gives you all of Sally: unlimited conversations, full memory, a relationship that grows over time.
+Free gives you 3 roasts and 10 chats a day. [SuperClub](https://cynicalsally.com/superclub) gives you all of Sally: unlimited conversations, full memory, a relationship that grows over time.
 
 Already a member? Just say:
 
 ```
 sally login your@email.com
 ```
-
-## Setup
-
-Install the skill and talk to her. That's it. Sally generates her own device ID automatically.
 
 ## More Sally
 
