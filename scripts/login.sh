@@ -54,5 +54,5 @@ else
   echo "Troubleshooting:" >&2
   echo "  - Double-check your email address" >&2
   echo "  - Make sure it's the email you used for SuperClub" >&2
-  echo "  - Don't have SuperClub? Get it at https://cynicalsally.com/superclub" >&2
+  echo "  - Don't have SuperClub? Get it at https://cynicalsally.com/en/superclub" >&2
 fi

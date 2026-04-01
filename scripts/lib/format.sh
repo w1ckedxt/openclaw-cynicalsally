@@ -44,7 +44,7 @@ format_roast() {
     if [[ "$quota_remaining" == "0" ]]; then
       echo "That was your last free roast today."
       echo "Already have SuperClub? Say: sally login your@email.com"
-      echo "Or upgrade: https://cynicalsally.com/superclub"
+      echo "Or upgrade: https://cynicalsally.com/en/superclub"
     elif [[ "$quota_remaining" -le 1 ]]; then
       echo "Roasts remaining: ${quota_remaining}/${quota_limit}"
       echo "Tip: SuperClub members get unlimited roasts. Say: sally login your@email.com"
@@ -201,14 +201,14 @@ format_status() {
       echo ""
       echo "Device linked to: ${email}"
       echo "But no active SuperClub subscription found."
-      echo "Subscribe: https://cynicalsally.com/superclub"
+      echo "Subscribe: https://cynicalsally.com/en/superclub"
     else
       echo ""
       echo "Already have SuperClub? Link your account:"
       echo "  sally login your@email.com"
       echo ""
       echo "Don't have SuperClub? Get unlimited everything:"
-      echo "  https://cynicalsally.com/superclub"
+      echo "  https://cynicalsally.com/en/superclub"
     fi
   fi
 }
@@ -231,7 +231,7 @@ format_chat() {
     echo "  sally login your@email.com"
     echo ""
     echo "Don't have SuperClub yet? Get unlimited chat:"
-    echo "  https://cynicalsally.com/superclub"
+    echo "  https://cynicalsally.com/en/superclub"
     return
   fi
 
@@ -244,7 +244,7 @@ format_chat() {
     if [[ "$quota_remaining" == "0" ]]; then
       echo "That was your last free message today."
       echo "Already have SuperClub? Say: sally login your@email.com"
-      echo "Or upgrade: https://cynicalsally.com/superclub"
+      echo "Or upgrade: https://cynicalsally.com/en/superclub"
     elif [[ "$quota_remaining" -le 3 ]]; then
       echo "Chat: ${quota_remaining}/${quota_limit} remaining today"
       echo "Tip: SuperClub members get unlimited chat. Say: sally login your@email.com"
