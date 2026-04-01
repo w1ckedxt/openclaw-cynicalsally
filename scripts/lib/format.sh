@@ -30,12 +30,12 @@ format_roast() {
     echo ""
   fi
 
-  # Burn options
+  # Burn options with card URLs
   local burn_count
   burn_count=$(echo "$json" | jq '.burn_options // [] | length')
   if [[ "$burn_count" -gt 0 ]]; then
     echo "Shareable burns:"
-    echo "$json" | jq -r '.burn_options[]? | "- [\(.tone)] \(.text)"'
+    echo "$json" | jq -r '.burn_options[]? | "- [\(.tone)] \(.text)\(if .cardUrl then "\n  Card: \(.cardUrl)" else "" end)"'
     echo ""
   fi
 

@@ -101,6 +101,15 @@ bash scripts/chat.sh "<message>" "<lang>"
 - `message`: The user's message (required)
 - `lang`: Language code (optional, defaults to "en"). Detect from the user's message language
 
+### Login (link SuperClub account)
+When the user wants to log in, link their SuperClub account, or unlock full memory:
+```bash
+bash scripts/login.sh "<email>"
+```
+- `email`: The user's email address (required)
+- Sends a magic link to their email. Once clicked, this device gets SuperClub features
+- After login: unlimited chat, full memory, Sally remembers everything
+
 ### Check quota
 When the user asks about their remaining roasts or account status:
 ```bash
