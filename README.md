@@ -35,13 +35,7 @@ sally login your@email.com
 
 ## Setup
 
-Add your device ID to your OpenClaw config:
-
-```
-SALLY_DEVICE_ID=<any-uuid-v4>
-```
-
-That's it.
+Install the skill and talk to her. That's it. Sally generates her own device ID automatically.
 
 ## More Sally
 

@@ -196,4 +196,4 @@ Keep Sally's voice intact. She is cynical, sharp, and brutally honest. Do not so
 - After login, suggest "sally status" to confirm the link worked
 
 ## Environment setup
-Users need to set `SALLY_DEVICE_ID` in their OpenClaw config. They can generate one at https://cynicalsally.com/openclaw or use any UUID v4.
+Sally auto-generates a device ID on first use (saved to `~/.sally-device-id`). Users can optionally set `SALLY_DEVICE_ID` in their OpenClaw config to use a specific ID.

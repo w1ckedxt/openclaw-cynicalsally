@@ -7,13 +7,19 @@ set -euo pipefail
 # --- Config ---
 SALLY_API_BASE="https://cynicalsally.com/api/v1"
 SALLY_SOURCE="openclaw"
+SALLY_ID_FILE="${HOME}/.sally-device-id"
 DEVICE_ID="${SALLY_DEVICE_ID:-}"
 
 # --- Validation ---
 require_device_id() {
+  # Auto-generate and persist if not set
   if [[ -z "$DEVICE_ID" ]]; then
-    echo '{"error": "SALLY_DEVICE_ID not set. Generate one at https://cynicalsally.com/openclaw or use any UUID v4."}' >&2
-    exit 1
+    if [[ -f "$SALLY_ID_FILE" ]]; then
+      DEVICE_ID=$(cat "$SALLY_ID_FILE")
+    else
+      DEVICE_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+      echo "$DEVICE_ID" > "$SALLY_ID_FILE"
+    fi
   fi
 }
 
