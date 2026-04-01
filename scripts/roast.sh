@@ -104,7 +104,7 @@ if [[ "$HTTP_CODE" == "429" ]]; then
   echo "  sally login your@email.com" >&2
   echo "" >&2
   echo "Don't have SuperClub? Get unlimited roasts:" >&2
-  echo "  https://cynicalsally.com/en/superclub" >&2
+  echo "  https://cynicalsally.com/superclub" >&2
   exit 0
 fi
 

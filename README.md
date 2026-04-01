@@ -25,7 +25,7 @@ Just talk to her. Say "hey sally" and go from there.
 
 ## SuperClub
 
-Free gives you 3 roasts and 10 chats a day. [SuperClub](https://cynicalsally.com/en/superclub) is the full companion experience.
+Free gives you 3 roasts and 10 chats a day. [SuperClub](https://cynicalsally.com/superclub) is the full companion experience.
 
 Already a member? Just say:
 

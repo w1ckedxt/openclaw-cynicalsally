@@ -115,7 +115,7 @@ When the user wants to log in, link their SuperClub account, or unlock full feat
 - "I have SuperClub", "I'm a SuperClub member", "I already pay"
 - "link my account", "connect my account"
 - "how do I unlock", "how do I get unlimited", "unlock full memory"
-- "upgrade", "get SuperClub" (direct them to login if they mention having it, or to https://cynicalsally.com/en/superclub if they don't)
+- "upgrade", "get SuperClub" (direct them to login if they mention having it, or to https://cynicalsally.com/superclub if they don't)
 
 **If the user provides their email:**
 ```bash
@@ -191,7 +191,7 @@ Keep Sally's voice intact. She is cynical, sharp, and brutally honest. Do not so
 - Show remaining quota after each roast or chat
 - When quota is exhausted:
   - If user might already have SuperClub: "Already have SuperClub? Say: sally login your@email.com"
-  - If user doesn't have SuperClub: "Upgrade at https://cynicalsally.com/en/superclub"
+  - If user doesn't have SuperClub: "Upgrade at https://cynicalsally.com/superclub"
   - Always mention both options so the user can choose
 - After login, suggest "sally status" to confirm the link worked
 
