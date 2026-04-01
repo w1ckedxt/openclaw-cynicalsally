@@ -1,7 +1,7 @@
 {
   "name": "cynicalsally",
   "displayName": "Cynical Sally",
-  "description": "Cynical Sally is a brutally honest AI personality. Chat with her, get roasted, or ask for the truth about anything you throw at her.",
+  "description": "Meet Sally. She's sharp, she's honest, and she has opinions about everything you throw at her. Chat, roast, review, repeat.",
   "version": "1.0.0",
   "author": "w1ckedxt",
   "homepage": "https://cynicalsally.com",
@@ -11,7 +11,7 @@
     "chat",
     "roast",
     "code-review",
-    "ai-personality",
+    "personality",
     "cynical-sally",
     "feedback",
     "document-review"
