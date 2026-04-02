@@ -167,11 +167,15 @@ function createStatusTool() {
 }
 
 // ---------------------------------------------------------------------------
-// Tool: sally_roast — Roast a URL
+// Tool: sally_roast — Roast anything: URL, image, document, PDF
 // ---------------------------------------------------------------------------
 
 const RoastSchema = Type.Object({
-  url: Type.String({ description: "The URL to roast." }),
+  url: Type.Optional(Type.String({ description: "URL to roast." })),
+  document: Type.Optional(Type.String({ description: "Plain text content to roast (CV, essay, article, etc)." })),
+  image_base64: Type.Optional(Type.String({ description: "Base64-encoded image data to roast." })),
+  image_media_type: Type.Optional(Type.String({ description: "Image media type: image/jpeg, image/png, image/gif, image/webp." })),
+  pdf_base64: Type.Optional(Type.String({ description: "Base64-encoded PDF data to roast." })),
   lang: Type.Optional(Type.String({ description: "Language code (en, nl, de, etc)." })),
 }, { additionalProperties: false });
 
@@ -179,17 +183,30 @@ function createRoastTool() {
   return {
     name: "sally_roast",
     label: "Sally Roast",
-    description: "Have Sally roast a URL. She'll analyze the website and give her brutally honest verdict with a score out of 100.",
+    description: "Have Sally roast anything: a URL, an image, a document, a PDF, text — anything you throw at her. She gives a brutally honest verdict with a score out of 100, burn cards, and a bright side.",
     parameters: RoastSchema,
     execute: async (_id, rawParams) => {
-      const url = String(rawParams.url || "");
       const lang = String(rawParams.lang || "en");
-      const data = await sallyPost("/roast", {
-        url,
+      const body = {
         deviceId: getDeviceId(),
         lang,
         source: "openclaw",
-      });
+      };
+
+      if (rawParams.url) {
+        body.url = String(rawParams.url);
+      } else if (rawParams.image_base64) {
+        body.image = {
+          base64: String(rawParams.image_base64),
+          mediaType: String(rawParams.image_media_type || "image/jpeg"),
+        };
+      } else if (rawParams.pdf_base64) {
+        body.pdf = String(rawParams.pdf_base64);
+      } else if (rawParams.document) {
+        body.document = String(rawParams.document);
+      }
+
+      const data = await sallyPost("/roast", body);
       return result(data);
     },
   };
