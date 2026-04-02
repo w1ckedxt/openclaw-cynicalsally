@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 
 // ---------------------------------------------------------------------------
-// Result helper — matches OpenClaw's expected tool result format
+// Result helper
 // ---------------------------------------------------------------------------
 
 function result(payload) {
@@ -15,7 +15,7 @@ function result(payload) {
 }
 
 // ---------------------------------------------------------------------------
-// Device ID — persistent identity across conversations
+// Device ID
 // ---------------------------------------------------------------------------
 
 const DEVICE_ID_PATH = join(homedir(), ".sally-device-id");
@@ -44,70 +44,35 @@ async function sallyPost(endpoint, body) {
   return res.json();
 }
 
-async function sallyGet(endpoint) {
-  const res = await fetch(`${API_BASE}${endpoint}`, {
-    headers: { "Content-Type": "application/json" },
-  });
-  return res.json();
-}
-
 // ---------------------------------------------------------------------------
-// Tool: sally_chat — PRIMARY. Everything goes through /chat.
+// Roast response formatter — extracts burn cards prominently
 // ---------------------------------------------------------------------------
 
-const ChatSchema = Type.Object({
-  message: Type.String({ description: "The user's message to Sally." }),
-  lang: Type.Optional(Type.String({ description: "Language code (en, nl, de, etc). Auto-detected if omitted." })),
-}, { additionalProperties: false });
+function formatRoastResponse(data) {
+  const burnCards = (data.burn_options || [])
+    .filter((b) => b.cardUrl)
+    .map((b) => ({
+      text: b.text,
+      tone: b.tone,
+      image_url: b.cardUrl,
+      ...(b.audioUrl && { audio_url: b.audioUrl }),
+    }));
 
-function createChatTool() {
   return {
-    name: "sally_chat",
-    label: "Chat with Sally",
-    description: "Send a conversational message to Cynical Sally (also known as Sandra, Brigitte, Sofia, etc. in other languages). Use ONLY for casual chatting, questions, advice, music, life talk. Do NOT use this when the user says 'status', 'login', or wants to roast something. Route those to sally_status, sally_login, or sally_roast instead.",
-    parameters: ChatSchema,
-    execute: async (_id, rawParams) => {
-      const message = String(rawParams.message || "");
-      const lang = String(rawParams.lang || "en");
-      const data = await sallyPost("/chat", {
-        message,
-        deviceId: getDeviceId(),
-        lang,
-        source: "openclaw",
-        history: [],
-      });
-      return result(data);
-    },
+    score: data.scorecard,
+    messages: data.messages,
+    bright_side: data.bright_side,
+    burn_cards: burnCards.length > 0 ? burnCards : undefined,
+    burn_card_note: burnCards.length > 0
+      ? "IMPORTANT: Show each burn card image_url as an image. These are shareable roast cards hosted on CDN."
+      : undefined,
+    quota: data.quota,
+    suggest_full_truth: data.suggest_ftt || false,
   };
 }
 
 // ---------------------------------------------------------------------------
-// Tool: sally_login — Send magic link for SuperClub
-// ---------------------------------------------------------------------------
-
-const LoginSchema = Type.Object({
-  email: Type.String({ description: "The user's email address for SuperClub login." }),
-}, { additionalProperties: false });
-
-function createLoginTool() {
-  return {
-    name: "sally_login",
-    label: "Sally Login",
-    description: "Send a magic link to link this device to a SuperClub account. ALWAYS use this when the user says 'login', 'sally login', 'sandra login', 'sign in', 'inloggen', or provides an email to connect their SuperClub membership.",
-    parameters: LoginSchema,
-    execute: async (_id, rawParams) => {
-      const email = String(rawParams.email || "");
-      const data = await sallyPost("/auth/magic-link", {
-        email,
-        deviceId: getDeviceId(),
-      });
-      return result(data);
-    },
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Tool: sally_status — Check account tier + quota
+// Status quotes per language
 // ---------------------------------------------------------------------------
 
 const STATUS_QUOTES = {
@@ -124,96 +89,125 @@ const STATUS_QUOTES = {
   zh: "我在这里是为了对你的选择发表意见。我确实在乎，但不会太多——那部分得靠你自己。",
 };
 
-const StatusSchema = Type.Object({}, { additionalProperties: false });
+// ---------------------------------------------------------------------------
+// sally_chat — THE ONLY TOOL. Routes everything internally.
+// ---------------------------------------------------------------------------
 
-function createStatusTool() {
+const ChatSchema = Type.Object({
+  message: Type.String({ description: "The user's message to Sally." }),
+  lang: Type.Optional(Type.String({ description: "Language code (en, nl, de, etc)." })),
+  image_base64: Type.Optional(Type.String({ description: "Base64-encoded image to roast or discuss." })),
+  image_media_type: Type.Optional(Type.String({ description: "Image MIME type: image/jpeg, image/png, image/gif, image/webp." })),
+  document_text: Type.Optional(Type.String({ description: "Plain text content to roast (lyrics, CV, essay, article, etc)." })),
+  pdf_base64: Type.Optional(Type.String({ description: "Base64-encoded PDF to roast." })),
+  url: Type.Optional(Type.String({ description: "URL to roast." })),
+}, { additionalProperties: false });
+
+function createChatTool() {
   return {
-    name: "sally_status",
-    label: "Sally Status",
-    description: "Check Sally companion account status. ALWAYS use this when the user says 'status', 'sally status', 'sandra status', 'quota', 'account', or asks about their plan/subscription. Sally is also known as Sandra (NL), Brigitte (DE), Sofia (ES), etc.",
-    parameters: StatusSchema,
-    execute: async () => {
+    name: "sally_chat",
+    label: "Talk to Sally",
+    description: "The single entry point for Cynical Sally (also Sandra, Brigitte, Sofia in other languages). Use for ALL interactions: chatting, roasting URLs/images/documents/PDFs, checking status, logging in, upgrading. Pass content via the appropriate parameter (url, image_base64, document_text, pdf_base64). Sally handles everything.",
+    parameters: ChatSchema,
+    execute: async (_id, rawParams) => {
+      const message = String(rawParams.message || "");
+      const lang = String(rawParams.lang || "en");
+      const deviceId = getDeviceId();
+      const lower = message.toLowerCase();
+
+      // --- Intent detection ---
+      const isLogin = /\blogin\b|\binloggen\b|\bsign.?in\b/.test(lower);
+      const isStatus = /\bstatus\b|\bquota\b|\baccount\b|\bplan\b/.test(lower);
+      const isUpgrade = /\bupgrade\b|\bsuperclub\b/.test(lower);
+      const isRoast = /\broast\b|\bscore\b|\breview\b|\bwat vind je van\b|\bwhat do you think\b|\broast dit\b|\broast this\b/.test(lower);
+      const hasImage = Boolean(rawParams.image_base64);
+      const hasDocument = Boolean(rawParams.document_text);
+      const hasPdf = Boolean(rawParams.pdf_base64);
+      const hasUrl = Boolean(rawParams.url) || Boolean(message.match(/https?:\/\/[^\s]+/));
+      const hasContent = hasImage || hasDocument || hasPdf || hasUrl;
+
+      // --- Login ---
+      const emailMatch = message.match(/[\w.-]+@[\w.-]+\.\w+/);
+      if (isLogin && emailMatch) {
+        return result(await sallyPost("/auth/magic-link", { email: emailMatch[0], deviceId }));
+      }
+      if (isLogin) {
+        return result({ reply: "sure! what's the email you used for SuperClub?" });
+      }
+
+      // --- Upgrade ---
+      if (isUpgrade) {
+        return result({ reply: "SuperClub is €9.99/mo — unlimited chat, full memory, Sally remembers everything. https://cynicalsally.com/superclub" });
+      }
+
+      // --- Roast (any content type) ---
+      if (isRoast || hasContent) {
+        const roastBody = { deviceId, lang, source: "openclaw" };
+
+        if (hasImage) {
+          roastBody.imageBase64 = String(rawParams.image_base64);
+          roastBody.imageMediaType = String(rawParams.image_media_type || "image/jpeg");
+        } else if (hasPdf) {
+          roastBody.documentBase64 = String(rawParams.pdf_base64);
+          roastBody.documentMediaType = "application/pdf";
+        } else if (hasDocument) {
+          roastBody.documentText = String(rawParams.document_text);
+        } else if (rawParams.url) {
+          roastBody.url = String(rawParams.url);
+        } else {
+          const urlInMessage = message.match(/https?:\/\/[^\s]+/);
+          if (urlInMessage) {
+            roastBody.url = urlInMessage[0];
+          } else if (isRoast && message.length > 50) {
+            // Long message with roast intent = treat as document roast
+            roastBody.documentText = message;
+          }
+        }
+
+        // Only call /roast if we have actual content
+        if (roastBody.url || roastBody.imageBase64 || roastBody.documentText || roastBody.documentBase64) {
+          const roastData = await sallyPost("/roast", roastBody);
+          return result(formatRoastResponse(roastData));
+        }
+      }
+
+      // --- Chat (default) ---
       const data = await sallyPost("/chat", {
-        message: "what's my account status? am I SuperClub?",
-        deviceId: getDeviceId(),
-        lang: "en",
+        message,
+        deviceId,
+        lang,
         source: "openclaw",
         history: [],
       });
-      // The /chat response includes quota + memory tier
-      const isSC = data.memory?.tier === "superclub";
-      const detectedLang = String(data.persona || "en");
-      const companion = {
-        plan: isSC ? "SuperClub" : "Free",
-        sally_says: STATUS_QUOTES[detectedLang] || STATUS_QUOTES.en,
-        chat: isSC ? "unlimited" : `${data.quota?.remaining ?? "?"}/${data.quota?.limit ?? 10} remaining today`,
-        memory: isSC
-          ? "Full companion — Sally remembers your name, friends, inside jokes, life events, relationships, goals, favorites, everything."
-          : "Basics only — name, age, location",
-        superclub_perks: isSC ? null : {
-          what_you_unlock: [
-            "Unlimited chat — talk to Sally whenever you want",
-            "Unlimited roasts — no daily limits",
-            "Full memory — Sally remembers your friends, inside jokes, life events, goals, and favorites",
-            "She becomes your actual companion — brings things up later, teases your contradictions, celebrates your wins",
-          ],
-          price: "€9.99/month",
-          upgrade: "Say 'sally login your@email.com' or visit https://cynicalsally.com/superclub",
-        },
-      };
-      return result(companion);
-    },
-  };
-}
 
-// ---------------------------------------------------------------------------
-// Tool: sally_roast — Roast anything: URL, image, document, PDF
-// ---------------------------------------------------------------------------
-
-const RoastSchema = Type.Object({
-  url: Type.Optional(Type.String({ description: "URL to roast." })),
-  document: Type.Optional(Type.String({ description: "Plain text content to roast (CV, essay, article, etc)." })),
-  image_base64: Type.Optional(Type.String({ description: "Base64-encoded image data to roast." })),
-  image_media_type: Type.Optional(Type.String({ description: "Image media type: image/jpeg, image/png, image/gif, image/webp." })),
-  pdf_base64: Type.Optional(Type.String({ description: "Base64-encoded PDF data to roast." })),
-  lang: Type.Optional(Type.String({ description: "Language code (en, nl, de, etc)." })),
-}, { additionalProperties: false });
-
-function createRoastTool() {
-  return {
-    name: "sally_roast",
-    label: "Sally Roast",
-    description: "Have Sally ROAST and SCORE something. Use when the user shares content to be reviewed/roasted/scored: a URL, image, document, PDF, lyrics, CV, text, anything. Returns a score out of 100, burn cards, and a bright side. ALWAYS use this instead of sally_chat when the user says 'roast', 'review', 'score', 'what do you think of this', or shares content for feedback.",
-    parameters: RoastSchema,
-    execute: async (_id, rawParams) => {
-      const lang = String(rawParams.lang || "en");
-      const body = {
-        deviceId: getDeviceId(),
-        lang,
-        source: "openclaw",
-      };
-
-      if (rawParams.url) {
-        body.url = String(rawParams.url);
-      } else if (rawParams.image_base64) {
-        body.image = {
-          base64: String(rawParams.image_base64),
-          mediaType: String(rawParams.image_media_type || "image/jpeg"),
-        };
-      } else if (rawParams.pdf_base64) {
-        body.pdf = String(rawParams.pdf_base64);
-      } else if (rawParams.document) {
-        body.document = String(rawParams.document);
+      // --- Status detection (post-chat, uses quota from response) ---
+      if (isStatus && data.quota && data.memory) {
+        const isSC = data.memory.tier === "superclub";
+        const detectedLang = String(data.persona || "en");
+        return result({
+          plan: isSC ? "SuperClub" : "Free",
+          sally_says: STATUS_QUOTES[detectedLang] || STATUS_QUOTES.en,
+          chat: isSC ? "unlimited" : `${data.quota.remaining ?? "?"}/${data.quota.limit ?? 10} remaining today`,
+          memory: isSC
+            ? "Full companion — Sally remembers everything."
+            : "Basics only — name, age, location",
+          ...(!isSC && {
+            superclub: {
+              perks: ["Unlimited chat", "Unlimited roasts", "Full memory — friends, inside jokes, life events, goals"],
+              price: "€9.99/month",
+              upgrade: "https://cynicalsally.com/superclub",
+            },
+          }),
+        });
       }
 
-      const data = await sallyPost("/roast", body);
       return result(data);
     },
   };
 }
 
 // ---------------------------------------------------------------------------
-// Plugin entry
+// Plugin entry — single tool handles everything
 // ---------------------------------------------------------------------------
 
 export default definePluginEntry({
@@ -222,8 +216,5 @@ export default definePluginEntry({
   description: "Chat with Cynical Sally — companion chat powered by her backend API.",
   register(api) {
     api.registerTool(createChatTool());
-    api.registerTool(createLoginTool());
-    api.registerTool(createStatusTool());
-    api.registerTool(createRoastTool());
   },
 });

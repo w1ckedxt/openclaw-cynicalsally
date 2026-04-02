@@ -4,12 +4,7 @@
   "description": "Chat with Sally — companion chat powered by her backend API. Sally's personality, memory, and now-playing all live server-side.",
   "enabledByDefault": false,
   "contracts": {
-    "tools": [
-      "sally_chat",
-      "sally_login",
-      "sally_status",
-      "sally_roast"
-    ]
+    "tools": ["sally_chat"]
   },
   "configSchema": {
     "type": "object",
