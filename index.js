@@ -110,6 +110,20 @@ function createLoginTool() {
 // Tool: sally_status — Check account tier + quota
 // ---------------------------------------------------------------------------
 
+const STATUS_QUOTES = {
+  en: "i'm here to have opinions about your choices. i do care, just... not too much. that part's on you.",
+  nl: "ik ben hier om iets van je keuzes te vinden. ik leef wel met je mee hoor, maar niet te veel — dat moet je toch echt zelf doen.",
+  de: "ich bin hier, um was zu deinen Entscheidungen zu sagen. ich leb schon mit dir mit, aber nicht zu viel — das musst du schon selbst machen.",
+  fr: "je suis là pour avoir un avis sur tes choix. je compatis, hein, mais pas trop — ça, c'est ton problème.",
+  es: "estoy aquí para opinar sobre tus decisiones. me importas, pero no demasiado — eso te toca a ti.",
+  pt: "estou aqui para ter opinião sobre as tuas escolhas. até me preocupo contigo, mas não muito — essa parte é contigo.",
+  it: "sono qui per dire la mia sulle tue scelte. ci tengo, sì, ma non troppo — quella parte tocca a te.",
+  tr: "senin seçimlerin hakkında fikrim olsun diye buradayım. umursuyorum, ama çok değil — o kısmı kendin halletmelisin.",
+  ja: "あなたの選択にいちいち意見するためにいるの。気にはしてるよ、でもほどほどにね — そこは自分でなんとかして。",
+  pl: "jestem tu, żeby mieć zdanie o twoich wyborach. przejmuję się tobą, ale nie za bardzo — reszta to twoja sprawa.",
+  zh: "我在这里是为了对你的选择发表意见。我确实在乎，但不会太多——那部分得靠你自己。",
+};
+
 const StatusSchema = Type.Object({}, { additionalProperties: false });
 
 function createStatusTool() {
@@ -128,13 +142,11 @@ function createStatusTool() {
       });
       // The /chat response includes quota + memory tier
       const isSC = data.memory?.tier === "superclub";
+      const detectedLang = String(data.persona || "en");
       const companion = {
         plan: isSC ? "SuperClub" : "Free",
-        sally_says: data.reply,
-        chat: {
-          remaining: data.quota?.remaining ?? "?",
-          limit: data.quota?.limit ?? "?",
-        },
+        sally_says: STATUS_QUOTES[detectedLang] || STATUS_QUOTES.en,
+        chat: isSC ? "unlimited" : `${data.quota?.remaining ?? "?"}/${data.quota?.limit ?? 10} remaining today`,
         memory: isSC
           ? "Full companion — Sally remembers your name, friends, inside jokes, life events, relationships, goals, favorites, everything."
           : "Basics only — name, age, location",
