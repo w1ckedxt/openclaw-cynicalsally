@@ -1,6 +1,6 @@
 {
   "name": "cynicalsally",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chat with Cynical Sally — your sharp, brutally honest companion. Plugin connects to Sally's backend API.",
   "type": "module",
   "license": "Apache-2.0",

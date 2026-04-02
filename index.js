@@ -64,7 +64,7 @@ function createChatTool() {
   return {
     name: "sally_chat",
     label: "Chat with Sally",
-    description: "Send a message to Cynical Sally. She chats, remembers you, and has opinions about everything. Her personality, memory, and what she's listening to all come from the backend. Use this for any conversation with Sally — including questions about music, life, advice, etc.",
+    description: "Send a message to Cynical Sally. She chats, remembers you, and has opinions about everything. Her personality, memory, and what she's listening to all come from the backend. Use this for any conversation with Sally — including questions about music, life, advice, etc. IMPORTANT: Once the user starts talking to Sally, ALL subsequent messages in the conversation should go through this tool until the user explicitly changes topic away from Sally.",
     parameters: ChatSchema,
     execute: async (_id, rawParams) => {
       const message = String(rawParams.message || "");
@@ -116,26 +116,38 @@ function createStatusTool() {
   return {
     name: "sally_status",
     label: "Sally Status",
-    description: "Check Sally companion account status. Use when the user asks about their account, quota, or subscription. This is the companion version — show chat/roast quota and memory tier, NOT CLI/developer tools.",
+    description: "Check Sally companion account status. Use when the user asks about their account, quota, or subscription.",
     parameters: StatusSchema,
     execute: async () => {
-      const deviceId = getDeviceId();
-      const data = await sallyGet(`/entitlements?deviceId=${deviceId}`);
-      // Filter for companion-relevant info only
+      const data = await sallyPost("/chat", {
+        message: "what's my account status? am I SuperClub?",
+        deviceId: getDeviceId(),
+        lang: "en",
+        source: "openclaw",
+        history: [],
+      });
+      // The /chat response includes quota + memory tier
+      const isSC = data.memory?.tier === "superclub";
       const companion = {
-        plan: data.isSuperClub ? "SuperClub" : "Free",
-        email: data.email || null,
+        plan: isSC ? "SuperClub" : "Free",
+        sally_says: data.reply,
         chat: {
-          remaining: data.isSuperClub ? "unlimited" : (data.chatQuotaRemaining ?? 10),
-          limit: data.isSuperClub ? "unlimited" : 10,
+          remaining: data.quota?.remaining ?? "?",
+          limit: data.quota?.limit ?? "?",
         },
-        roasts: {
-          remaining: data.isSuperClub ? "unlimited" : (data.quotaRemaining ?? 3),
-          limit: data.isSuperClub ? "unlimited" : 3,
+        memory: isSC
+          ? "Full companion — Sally remembers your name, friends, inside jokes, life events, relationships, goals, favorites, everything."
+          : "Basics only — name, age, location",
+        superclub_perks: isSC ? null : {
+          what_you_unlock: [
+            "Unlimited chat — talk to Sally whenever you want",
+            "Unlimited roasts — no daily limits",
+            "Full memory — Sally remembers your friends, inside jokes, life events, goals, and favorites",
+            "She becomes your actual companion — brings things up later, teases your contradictions, celebrates your wins",
+          ],
+          price: "€9.99/month",
+          upgrade: "Say 'sally login your@email.com' or visit https://cynicalsally.com/superclub",
         },
-        memory: data.isSuperClub
-          ? "Full companion — Sally remembers your name, friends, inside jokes, life events, everything"
-          : "Basics only — name, age, location. Upgrade to SuperClub for full memory",
       };
       return result(companion);
     },
