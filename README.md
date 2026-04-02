@@ -55,6 +55,15 @@ Same Sally, same memory, same attitude. One backend, every platform.
 
 Learn more at [cynicalsally.com/sallyverse](https://cynicalsally.com/sallyverse)
 
+## Privacy & Data
+
+- This plugin stores a device identifier at `~/.sally-device-id` to maintain your identity across sessions
+- All messages, URLs, images, documents, and PDFs you share are sent to `cynicalsally.com/api/v1` for processing
+- No credentials or API keys are required or stored
+- Do not send sensitive or confidential content unless you trust the service
+- Privacy policy: [cynicalsally.com/privacy](https://cynicalsally.com/privacy)
+- Data deletion: Bye@CynicalSally.com
+
 ---
 
 <p align="center"><em>No feelings were considered.</em></p>
