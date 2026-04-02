@@ -64,7 +64,7 @@ function createChatTool() {
   return {
     name: "sally_chat",
     label: "Chat with Sally",
-    description: "Send a message to Cynical Sally. She chats, remembers you, and has opinions about everything. Her personality, memory, and what she's listening to all come from the backend. Use this for any conversation with Sally — including questions about music, life, advice, etc. IMPORTANT: Once the user starts talking to Sally, ALL subsequent messages in the conversation should go through this tool until the user explicitly changes topic away from Sally.",
+    description: "Send a conversational message to Cynical Sally (also known as Sandra, Brigitte, Sofia, etc. in other languages). Use ONLY for casual chatting, questions, advice, music, life talk. Do NOT use this when the user says 'status', 'login', or wants to roast something. Route those to sally_status, sally_login, or sally_roast instead.",
     parameters: ChatSchema,
     execute: async (_id, rawParams) => {
       const message = String(rawParams.message || "");
@@ -93,7 +93,7 @@ function createLoginTool() {
   return {
     name: "sally_login",
     label: "Sally Login",
-    description: "Send a magic link to link this device to a SuperClub account. Use when the user says 'login', 'sign in', or wants to connect their SuperClub membership.",
+    description: "Send a magic link to link this device to a SuperClub account. ALWAYS use this when the user says 'login', 'sally login', 'sandra login', 'sign in', 'inloggen', or provides an email to connect their SuperClub membership.",
     parameters: LoginSchema,
     execute: async (_id, rawParams) => {
       const email = String(rawParams.email || "");
@@ -130,7 +130,7 @@ function createStatusTool() {
   return {
     name: "sally_status",
     label: "Sally Status",
-    description: "Check Sally companion account status. Use when the user asks about their account, quota, or subscription.",
+    description: "Check Sally companion account status. ALWAYS use this when the user says 'status', 'sally status', 'sandra status', 'quota', 'account', or asks about their plan/subscription. Sally is also known as Sandra (NL), Brigitte (DE), Sofia (ES), etc.",
     parameters: StatusSchema,
     execute: async () => {
       const data = await sallyPost("/chat", {
@@ -183,7 +183,7 @@ function createRoastTool() {
   return {
     name: "sally_roast",
     label: "Sally Roast",
-    description: "Have Sally roast anything: a URL, an image, a document, a PDF, text — anything you throw at her. She gives a brutally honest verdict with a score out of 100, burn cards, and a bright side.",
+    description: "Have Sally ROAST and SCORE something. Use when the user shares content to be reviewed/roasted/scored: a URL, image, document, PDF, lyrics, CV, text, anything. Returns a score out of 100, burn cards, and a bright side. ALWAYS use this instead of sally_chat when the user says 'roast', 'review', 'score', 'what do you think of this', or shares content for feedback.",
     parameters: RoastSchema,
     execute: async (_id, rawParams) => {
       const lang = String(rawParams.lang || "en");
