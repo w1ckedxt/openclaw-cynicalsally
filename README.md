@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="Cynical Sally - OpenClaw Skill" width="100%" />
+  <img src="assets/banner.png" alt="Cynical Sally - OpenClaw Plugin" width="100%" />
 </p>
 
 <h1 align="center">👑 Cynical Sally</h1>
@@ -9,22 +9,21 @@
 
 Sally is a companion. You talk to her, she talks back. She remembers your name, your stories, your questionable life choices. She's sharp, she's funny, and she never sugarcoats.
 
-This OpenClaw skill connects you to Sally's backend — her personality, memory, and intelligence all live server-side. The skill is a relay: your messages go in, Sally's responses come back. No local AI roleplay, no made-up answers. Just Sally.
+This OpenClaw plugin connects you to Sally's backend — her personality, memory, and intelligence all live server-side. Every message goes through the real Sally API. No local AI roleplay, no made-up answers. Just Sally.
 
 ## What she can do
 
 - **Chat** — just talk. She remembers you, she has opinions, she keeps it real
-- **Roast** — share a URL, image, document, or PDF and get her honest verdict (0-100 score)
-- **Code review** — drop your code and brace yourself
-- **Full Truth** — deep analysis with a roadmap and score breakdown
-- **Now Playing** — ask what she's listening to (real tracks, not made up)
+- **Roast** — share a URL and get her honest verdict (0-100 score)
+- **Now Playing** — ask what she's listening to (real tracks from her playlist)
+- **Status** — check your account tier, quota, and memory level
 
 ## Getting started
 
-Install the skill in OpenClaw:
+Install the plugin in OpenClaw:
 
 ```
-openclaw skills install openclaw-cynicalsally
+openclaw plugins install clawhub:@cynicalsally/openclaw-plugin
 ```
 
 Then just say "hey sally" and go from there.
@@ -41,7 +40,7 @@ sally login your@email.com
 
 ## Part of the Sallyverse
 
-This OpenClaw skill is one way to talk to Sally. She lives everywhere:
+This OpenClaw plugin is one way to talk to Sally. She lives everywhere:
 
 | Platform | What it does |
 |----------|-------------|

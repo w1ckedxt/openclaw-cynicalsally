@@ -1,0 +1,19 @@
+{
+  "id": "cynicalsally",
+  "name": "Cynical Sally",
+  "description": "Chat with Sally — companion chat powered by her backend API. Sally's personality, memory, and now-playing all live server-side.",
+  "enabledByDefault": true,
+  "contracts": {
+    "tools": [
+      "sally_chat",
+      "sally_login",
+      "sally_status",
+      "sally_roast"
+    ]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  }
+}

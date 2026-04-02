@@ -1,0 +1,18 @@
+{
+  "name": "@cynicalsally/openclaw-plugin",
+  "version": "1.0.0",
+  "description": "Chat with Cynical Sally — your sharp, brutally honest companion. Plugin connects to Sally's backend API.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "w1ckedxt",
+  "homepage": "https://cynicalsally.com",
+  "repository": "https://github.com/w1ckedxt/openclaw-cynicalsally",
+  "openclaw": {
+    "extensions": [
+      "./index.js"
+    ]
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.49"
+  }
+}
