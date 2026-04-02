@@ -39,12 +39,22 @@ Already a member? Just say:
 sally login your@email.com
 ```
 
-## More Sally
+## Part of the Sallyverse
 
-- [ClawHub](https://clawhub.ai/w1ckedxt/openclaw-cynicalsally) — Install Sally on OpenClaw
-- [cynicalsally.com](https://cynicalsally.com)
-- [Chrome Extension](https://chromewebstore.google.com)
-- [CLI for developers](https://www.npmjs.com/package/@cynicalsally/cli)
+This OpenClaw skill is one way to talk to Sally. She lives everywhere:
+
+| Platform | What it does |
+|----------|-------------|
+| [OpenClaw](https://clawhub.ai/w1ckedxt/openclaw-cynicalsally) | Chat companion via OpenClaw agents |
+| [Chrome Extension](https://chromewebstore.google.com) | Instant roasts from your browser |
+| [Safari Extension](https://cynicalsally.com/sallyverse) | macOS, iPhone, iPad |
+| [Sally MCP](https://cynicalsally.com/sallyverse) | Claude Code, Cursor, Windsurf integration |
+| [Sally CLI](https://www.npmjs.com/package/@cynicalsally/cli) | Terminal tools for developers |
+| [Sally Web](https://cynicalsally.com) | Quick roasts and Full Truth reports |
+
+Same Sally, same memory, same attitude. One backend, every platform.
+
+Learn more at [cynicalsally.com/sallyverse](https://cynicalsally.com/sallyverse)
 
 ---
 
