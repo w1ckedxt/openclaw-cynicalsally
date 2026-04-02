@@ -131,26 +131,57 @@ Tell them: "Sure! What's the email address you used for SuperClub?" Then run the
 - After login: unlimited chat, full memory, Sally remembers everything
 - **After the link is sent**, tell the user to check their email and click the link, then say "sally status" to confirm it worked
 
-### Check quota
-When the user asks about their remaining roasts or account status:
+### Check quota / account status
+When the user asks about their account, remaining roasts, subscription, tier, or quota:
 ```bash
 bash scripts/status.sh
 ```
+Trigger phrases: "status", "quota", "how many left", "hoeveel roasts", "wat voor account", "account", "zit ik in superclub", "am I SuperClub", "my plan", "my tier", "remaining", "how many roasts"
 
-## Routing: chat vs roast
+### Now Playing (what Sally is listening to)
+When the user asks what Sally is listening to, her music, her playlist, or what's playing:
+```bash
+bash scripts/nowplaying.sh
+```
+Trigger phrases: "what are you listening to", "waar luister je naar", "now playing", "what song", "welk liedje", "muziek", "music", "playlist", "what's playing"
 
-This is important. Decide based on what the user sends:
+Present the result naturally in Sally's voice. The response contains `tracks[]` with `name`, `artist`, and optionally `url`.
 
-- **URL shared** → roast.sh (Quick Roast)
-- **Image shared** → roast.sh --image (Quick Roast)
-- **Document shared** → roast.sh --document (Quick Roast)
-- **PDF shared** → roast.sh --pdf (Quick Roast)
-- **Code shared** → review.sh (Code Review)
-- **Casual message, question, conversation** → chat.sh (Chat)
-- **"roast this", "review this" + content** → appropriate roast/review script
-- **Login/account/SuperClub phrases** → login.sh (ask for email if not provided)
-- **"status", "quota", "how many left"** → status.sh
-- **Everything else** → chat.sh (Chat)
+## Routing rules
+
+**CRITICAL: You MUST run the actual bash scripts below. Do NOT answer these questions conversationally. Do NOT make up answers. Run the script and relay the output.**
+
+Check in this exact order — first match wins:
+
+### Priority 1: Login
+If the message contains "login", "log in", "sign in", "link my account", "connect", "I have SuperClub", "ik heb SuperClub":
+→ Run `bash scripts/login.sh "<email>"` (ask for email first if not provided)
+→ Do NOT explain how to log in manually. The script sends a magic link.
+
+### Priority 2: Account / Status / Quota
+If the message asks about account status, quota, remaining roasts, subscription, tier, or SuperClub membership:
+→ Run `bash scripts/status.sh`
+→ Do NOT guess the user's tier or quota. Run the script.
+
+### Priority 3: Now Playing / Music
+If the message asks what Sally is listening to, her music, playlist, or current song:
+→ Run `bash scripts/nowplaying.sh`
+→ Do NOT make up songs. The script returns real data.
+
+### Priority 4: Roast content
+- **URL shared** → `bash scripts/roast.sh "<url>" "<lang>"`
+- **Image shared** → `bash scripts/roast.sh --image "<base64>" "<media_type>" "<lang>"`
+- **Document shared** → `bash scripts/roast.sh --document "<text>" "<lang>"`
+- **PDF shared** → `bash scripts/roast.sh --pdf "<base64>" "<lang>"`
+
+### Priority 5: Code review
+- **Code files shared** → `bash scripts/review.sh "<mode>" "<lang>" "<path>" "<content>" ...`
+
+### Priority 6: Full Truth
+- **"full truth", "deep analysis"** → `bash scripts/truth.sh "<url_or_content>" "<lang>"`
+
+### Priority 7: Chat (default)
+- **Everything else** → `bash scripts/chat.sh "<message>" "<lang>"`
 
 When in doubt, use chat. Sally knows how to redirect if someone wants a roast.
 

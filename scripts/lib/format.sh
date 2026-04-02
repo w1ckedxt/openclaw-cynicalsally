@@ -213,6 +213,22 @@ format_status() {
   fi
 }
 
+format_nowplaying() {
+  local json="$1"
+
+  local track_count
+  track_count=$(echo "$json" | jq '.tracks // [] | length')
+
+  if [[ "$track_count" -eq 0 ]]; then
+    echo "Sally's playlist is empty right now. Even she takes a break sometimes."
+    return
+  fi
+
+  echo "Sally is listening to:"
+  echo ""
+  echo "$json" | jq -r '.tracks[]? | "  \(.artist) — \(.name)\(if .url then "\n  \(.url)" else "" end)"'
+}
+
 format_chat() {
   local json="$1"
 
