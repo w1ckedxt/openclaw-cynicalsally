@@ -1,7 +1,7 @@
 ---
 name: cynicalsally
 description: Meet Sally. She's sharp, she's honest, and she has opinions about everything you throw at her. Chat, roast, review, repeat.
-version: 1.0.0
+version: 1.1.0
 metadata:
   openclaw:
     requires:
