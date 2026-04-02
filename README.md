@@ -7,25 +7,31 @@
 
 ---
 
-Sally is a personality. You talk to her, she talks back. She remembers your name, your stories, your questionable life choices. She's sharp, she's funny, and she never sugarcoats.
+Sally is a companion. You talk to her, she talks back. She remembers your name, your stories, your questionable life choices. She's sharp, she's funny, and she never sugarcoats.
 
-The first time you meet her, she asks your name. Next time, she remembers. Waiting for the bus? Tell her. Bad date? She wants to hear it. New job? She'll congratulate you in the most backhanded way possible. Cooking disaster? She saw it coming.
+This OpenClaw skill connects you to Sally's backend — her personality, memory, and intelligence all live server-side. The skill is a relay: your messages go in, Sally's responses come back. No local AI roleplay, no made-up answers. Just Sally.
 
-She brings things up later. She connects the dots. She's the one constant in your phone that actually listens, even if she roasts you for it. A month in, you've got inside jokes. She's not something you use once. She's someone you keep coming back to.
+## What she can do
 
-Show her a URL, an image, a document, a PDF. She'll tell you exactly what she thinks. Or just chat. She's always got opinions.
+- **Chat** — just talk. She remembers you, she has opinions, she keeps it real
+- **Roast** — share a URL, image, document, or PDF and get her honest verdict (0-100 score)
+- **Code review** — drop your code and brace yourself
+- **Full Truth** — deep analysis with a roadmap and score breakdown
+- **Now Playing** — ask what she's listening to (real tracks, not made up)
 
-## How It Works
+## Getting started
 
-Just talk to her. Say "hey sally" and go from there.
+Install the skill in OpenClaw:
 
-- Send her a message and she'll chat
-- Share a link and she'll roast it
-- Drop an image or PDF and she'll have thoughts
+```
+openclaw skills install openclaw-cynicalsally
+```
+
+Then just say "hey sally" and go from there.
 
 ## SuperClub
 
-Free gives you 3 roasts and 10 chats a day. [SuperClub](https://cynicalsally.com/superclub) is the full companion experience.
+Free gives you 3 roasts and 10 chats a day. [SuperClub](https://cynicalsally.com/superclub) unlocks the full companion experience — unlimited chat, full memory, Sally remembers everything.
 
 Already a member? Just say:
 
@@ -35,7 +41,7 @@ sally login your@email.com
 
 ## More Sally
 
-- [ClawHub](https://clawhub.ai/w1ckedxt/openclaw-cynicalsally) - Install Sally on OpenClaw
+- [ClawHub](https://clawhub.ai/w1ckedxt/openclaw-cynicalsally) — Install Sally on OpenClaw
 - [cynicalsally.com](https://cynicalsally.com)
 - [Chrome Extension](https://chromewebstore.google.com)
 - [CLI for developers](https://www.npmjs.com/package/@cynicalsally/cli)
