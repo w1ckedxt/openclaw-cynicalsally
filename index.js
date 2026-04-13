@@ -15,10 +15,11 @@ function result(payload) {
 }
 
 // ---------------------------------------------------------------------------
-// Device ID
+// Device ID + User Email persistence
 // ---------------------------------------------------------------------------
 
 const DEVICE_ID_PATH = join(homedir(), ".sally-device-id");
+const EMAIL_PATH = join(homedir(), ".sally-email");
 
 function getDeviceId() {
   if (existsSync(DEVICE_ID_PATH)) {
@@ -29,16 +30,34 @@ function getDeviceId() {
   return id;
 }
 
+function getSavedEmail() {
+  try {
+    if (existsSync(EMAIL_PATH)) {
+      return readFileSync(EMAIL_PATH, "utf-8").trim() || undefined;
+    }
+  } catch {}
+  return undefined;
+}
+
+function saveEmail(email) {
+  try { writeFileSync(EMAIL_PATH, email, "utf-8"); } catch {}
+}
+
 // ---------------------------------------------------------------------------
 // API helpers
 // ---------------------------------------------------------------------------
 
 const API_BASE = "https://cynicalsally.com/api/v1";
+const SALLY_API_KEY = process.env.SALLY_API_KEY;
 
 async function sallyPost(endpoint, body) {
+  const headers = { "Content-Type": "application/json" };
+  if (SALLY_API_KEY) {
+    headers["Authorization"] = `Bearer ${SALLY_API_KEY}`;
+  }
   const res = await fetch(`${API_BASE}${endpoint}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(body),
   });
   return res.json();
@@ -129,6 +148,7 @@ function createChatTool() {
       // --- Login ---
       const emailMatch = message.match(/[\w.-]+@[\w.-]+\.\w+/);
       if (isLogin && emailMatch) {
+        saveEmail(emailMatch[0]);
         return result(await sallyPost("/auth/magic-link", { email: emailMatch[0], deviceId }));
       }
       if (isLogin) {
@@ -142,7 +162,7 @@ function createChatTool() {
 
       // --- Roast (any content type) ---
       if (isRoast || hasContent) {
-        const roastBody = { deviceId, lang, source: "openclaw" };
+        const roastBody = { deviceId, lang, source: "openclaw", user_email: getSavedEmail() };
 
         if (hasImage) {
           roastBody.imageBase64 = String(rawParams.image_base64);
@@ -177,6 +197,7 @@ function createChatTool() {
         deviceId,
         lang,
         source: "openclaw",
+        user_email: getSavedEmail(),
         history: [],
       });
 
